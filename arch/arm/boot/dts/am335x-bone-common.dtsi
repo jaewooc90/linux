@@ -51,6 +51,31 @@
 			linux,default-trigger = "mmc1";
 			default-state = "off";
 		};
+
+        led@6 {
+            label = "beaglebone:green:usr4";
+            gpios = <&gpio2 2 GPIO_ACTIVE_HIGH>;
+            default-state = "off";
+        };
+
+        led@7 {
+            label = "beaglebone:green:usr4";
+            gpios = <&gpio2 3 GPIO_ACTIVE_HIGH>;
+            default-state = "off";
+        };
+
+        led@8 {
+            label = "beaglebone:green:usr4";
+            gpios = <&gpio2 4 GPIO_ACTIVE_HIGH>;
+            default-state = "off";
+        };
+
+        led@9 {
+            label = "beaglebone:green:usr4";
+            gpios = <&gpio2 5 GPIO_ACTIVE_HIGH>;
+            default-state = "off";
+        };
+
 	};
 
 	vmmcsd_fixed: fixedregulator@0 {
@@ -65,12 +90,18 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&clkout2_pin>;
 
+
 	user_leds_s0: user_leds_s0 {
 		pinctrl-single,pins = <
 			0x54 (PIN_OUTPUT_PULLDOWN | MUX_MODE7)	/* gpmc_a5.gpio1_21 */
 			0x58 (PIN_OUTPUT_PULLUP | MUX_MODE7)	/* gpmc_a6.gpio1_22 */
 			0x5c (PIN_OUTPUT_PULLDOWN | MUX_MODE7)	/* gpmc_a7.gpio1_23 */
 			0x60 (PIN_OUTPUT_PULLUP | MUX_MODE7)	/* gpmc_a8.gpio1_24 */
+
+			0x98 (PIN_OUTPUT_PULLUP | MUX_MODE7)	/* gpmc_a8.gpio1_24 */
+			0x94 (PIN_OUTPUT_PULLUP | MUX_MODE7)	/* gpmc_a8.gpio1_24 */
+			0x9C (PIN_OUTPUT_PULLUP | MUX_MODE7)	/* gpmc_a8.gpio1_24 */
+			0x90 (PIN_OUTPUT_PULLUP | MUX_MODE7)	/* gpmc_a8.gpio1_24 */
 		>;
 	};
 
@@ -83,8 +114,8 @@
 
 	i2c2_pins: pinmux_i2c2_pins {
 		pinctrl-single,pins = <
-			0x178 (PIN_INPUT_PULLUP | MUX_MODE3)	/* uart1_ctsn.i2c2_sda */
-			0x17c (PIN_INPUT_PULLUP | MUX_MODE3)	/* uart1_rtsn.i2c2_scl */
+			0x178 (PIN_INPUT_PULLUP | MUX_MODE3)	/* i2c0_sda.i2c0_sda */
+			0x17c (PIN_INPUT_PULLUP | MUX_MODE3)	/* i2c0_scl.i2c0_scl */
 		>;
 	};
 
@@ -94,6 +125,29 @@
 			0x174 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* uart0_txd.uart0_txd */
 		>;
 	};
+
+    uart1_pins: pinmux_uart1_pins {
+        pinctrl-single,pins = <
+            0x180 (PIN_INPUT_PULLUP | MUX_MODE0)
+            0x184 (PIN_OUTPUT_PULLDOWN | MUX_MODE0) 
+        >;
+    }; 
+
+    usb_pins: pinmux_usb_pins {
+        pinctrl-single,pins = <
+            0x64 (PIN_INPUT | MUX_MODE7)
+            0x68 (PIN_INPUT | MUX_MODE7)
+        >;
+    };
+
+    dcan1_pins: pinmux_dcan1_pins {
+        pinctrl-single,pins = <
+            /*0x180 (PIN_INPUT_PULLUP | MUX_MODE2)
+            0x184 (PIN_OUTPUT | MUX_MODE2) */
+            0x180 0x12
+            0x184 0x32
+        >;
+    };
 
 	clkout2_pin: pinmux_clkout2_pin {
 		pinctrl-single,pins = <
@@ -183,9 +237,19 @@
 
 	status = "okay";
 };
+/*
+&uart1 {
+    pinctrl-names = "default";
+    pinctrl-0 = <&uart1_pins>;
 
+    status = "okay";
+};
+*/
 &usb {
 	status = "okay";
+    
+    pinctrl-names = "default";
+    pinctrl-0 = <&usb_pins>;
 };
 
 &usb_ctrl_mod {
@@ -284,7 +348,6 @@
 		};
 	};
 };
-
 
 /include/ "tps65217.dtsi"
 
@@ -393,3 +456,11 @@
 &sham {
 	status = "okay";
 };
+
+&dcan1 {
+    pinctrl-names = "default";
+    pinctrl-0 = <&dcan1_pins>;
+    status = "okay";
+};
+
+
