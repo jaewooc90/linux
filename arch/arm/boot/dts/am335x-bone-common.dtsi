@@ -54,29 +54,41 @@
 
         led@6 {
             label = "beaglebone:green:usr4";
-            gpios = <&gpio2 2 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpio2 2 GPIO_ACTIVE_LOW>;
             default-state = "off";
         };
 
         led@7 {
-            label = "beaglebone:green:usr4";
-            gpios = <&gpio2 3 GPIO_ACTIVE_HIGH>;
+            label = "beaglebone:green:usr5";
+            gpios = <&gpio2 3 GPIO_ACTIVE_LOW>;
             default-state = "off";
         };
 
         led@8 {
-            label = "beaglebone:green:usr4";
-            gpios = <&gpio2 4 GPIO_ACTIVE_HIGH>;
+            label = "beaglebone:green:usr6";
+            gpios = <&gpio2 4 GPIO_ACTIVE_LOW>;
             default-state = "off";
         };
 
         led@9 {
-            label = "beaglebone:green:usr4";
-            gpios = <&gpio2 5 GPIO_ACTIVE_HIGH>;
+            label = "beaglebone:green:usr7";
+            gpios = <&gpio2 5 GPIO_ACTIVE_LOW>;
             default-state = "off";
         };
 
 	};
+
+    pwms {
+        compatible = "pwm-leds";
+        pwmuser: pwmuser@0{
+            label = "pwmuser:red:front";
+            pwms = <&ehrpwm1 0 10000 1>;
+            pwm-names = "pwm";
+            active_low;
+            max_brightness = <255>;
+        };
+    };
+
 
 	vmmcsd_fixed: fixedregulator@0 {
 		compatible = "regulator-fixed";
@@ -98,12 +110,18 @@
 			0x5c (PIN_OUTPUT_PULLDOWN | MUX_MODE7)	/* gpmc_a7.gpio1_23 */
 			0x60 (PIN_OUTPUT_PULLUP | MUX_MODE7)	/* gpmc_a8.gpio1_24 */
 
-			0x98 (PIN_OUTPUT_PULLUP | MUX_MODE7)	/* gpmc_a8.gpio1_24 */
-			0x94 (PIN_OUTPUT_PULLUP | MUX_MODE7)	/* gpmc_a8.gpio1_24 */
-			0x9C (PIN_OUTPUT_PULLUP | MUX_MODE7)	/* gpmc_a8.gpio1_24 */
-			0x90 (PIN_OUTPUT_PULLUP | MUX_MODE7)	/* gpmc_a8.gpio1_24 */
+			0x98 (PIN_OUTPUT_PULLDOWN | MUX_MODE7)	/* gpmc_a8.gpio1_24 */
+			0x94 (PIN_OUTPUT_PULLDOWN | MUX_MODE7)	/* gpmc_a8.gpio1_24 */
+			0x9C (PIN_OUTPUT_PULLDOWN | MUX_MODE7)	/* gpmc_a8.gpio1_24 */
+			0x90 (PIN_OUTPUT_PULLDOWN | MUX_MODE7)	/* gpmc_a8.gpio1_24 */
 		>;
 	};
+
+    pwms_pins: pinmux_pwm_pins {
+        pinctrl-single,pins = <
+			0x48 (PIN_OUTPUT_PULLDOWN | MUX_MODE6)	/* gpmc_a8.gpio1_24 */
+        >;
+    };
 
 	i2c0_pins: pinmux_i2c0_pins {
 		pinctrl-single,pins = <
@@ -463,4 +481,13 @@
     status = "okay";
 };
 
+&epwmss1 {
+    status = "okay";
+
+    ehrpwm1: ehrpwm@48302200 {
+        pinctrl-names = "default";
+        pinctrl-0 = <&pwms_pins>;
+        status = "okay";
+    };
+};
 
