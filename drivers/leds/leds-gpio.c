@@ -33,6 +33,26 @@ struct gpio_led_data {
 			unsigned long *delay_on, unsigned long *delay_off);
 };
 
+static ssize_t blinking_show(struct device *dev, struct device_attribute *attr, char *buf)
+{
+    return scnprintf(buf, PAGE_SIZE, "hello\n");
+}
+static DEVICE_ATTR_RO(blinking);
+
+static struct attribute *blinking_attrs[] = {
+    &dev_attr_blinking.attr,
+    NULL,
+};
+
+static const struct attribute_group blinking_group = {
+    .attrs = blinking_attrs,
+};
+
+static const struct attribute_group *led_groups[] = {
+    &blinking_group,
+    NULL,
+};
+
 static void gpio_led_work(struct work_struct *work)
 {
 	struct gpio_led_data *led_dat =
@@ -126,6 +146,7 @@ static int create_gpio_led(const struct gpio_led *template,
 	led_dat->cdev.default_trigger = template->default_trigger;
 	led_dat->can_sleep = gpiod_cansleep(led_dat->gpiod);
 	led_dat->blinking = 0;
+    parent->groups = led_groups;
 	if (blink_set) {
 		led_dat->platform_gpio_blink_set = blink_set;
 		led_dat->cdev.blink_set = gpio_blink_set;
@@ -251,6 +272,7 @@ static int gpio_led_probe(struct platform_device *pdev)
 	int i, ret = 0;
 
 	if (pdata && pdata->num_leds) {
+        printk("******************************LED pdata available **** \n");
 		priv = devm_kzalloc(&pdev->dev,
 				sizeof_gpio_leds_priv(pdata->num_leds),
 					GFP_KERNEL);
@@ -270,7 +292,22 @@ static int gpio_led_probe(struct platform_device *pdev)
 			}
 		}
 	} else {
+        printk("******************************LED pdata NOT available **** \n");
 		priv = gpio_leds_create(pdev);
+        unsigned long delay7 = 500;
+        unsigned long delay6 = 600;
+        unsigned long delay5 = 700;
+        unsigned long delay4 = 800;
+        unsigned long delayoff7 = 1000;
+        unsigned long delayoff6 = 900;
+        unsigned long delayoff5 = 800;
+        unsigned long delayoff4 = 700;
+        
+        led_blink_set(&priv->leds[7].cdev, &delay7, &delayoff7);
+        led_blink_set(&priv->leds[6].cdev, &delay6, &delayoff6);
+        led_blink_set(&priv->leds[5].cdev, &delay5, &delayoff5);
+        led_blink_set(&priv->leds[4].cdev, &delay4, &delayoff4);
+
 		if (IS_ERR(priv))
 			return PTR_ERR(priv);
 	}
